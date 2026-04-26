@@ -1,0 +1,93 @@
+<!DOCTYPE html><html><head><title>Prayer App</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="styles.css">
+</head><body>
+
+<!-- ===================================================================================================================================================== -->
+<textarea id="markdown-input">
+
+Beginning Prayer                             ||A_Beginning.html
+h2:Sleeba
+Ninth hour                                   ||B_Sleeba_9_hr.html
+
+</textarea>
+<!-- ====================================================================================================== -->
+
+<div id="html-toc">
+</div>
+
+<script>
+
+function formatStr(inString) {
+    const cols = (inString).split('||');
+    var outString = cols[0].trim()
+    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=E';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
+    outString += ' English </span>';
+
+    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=M';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
+    outString += ' Malayalam </span>';
+
+    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=P';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
+    outString += ' Parallel </span><br>';
+
+    return outString;
+};
+
+/**
+    * Converts basic Markdown (headers, lists, and paragraphs) to HTML using pure JavaScript.
+    * This function manually handles nested lists based on simple indentation (4 spaces).
+    */
+function markdown_2_toc(markdown) {
+    const lines = (markdown + "\n").split('\n');
+    let html = '<h1>' + document.title + '</h1>';
+    html += '<div class="container"><h2>Table of Contents</h2>'
+
+    for (let line_i = 0; line_i < (lines.length - 1); line_i++) {
+        const line = lines[line_i].trim(); // The current line
+        if (line == '') {
+            html += '<div style="height: 5px;"></div>';
+        } else if (line.substring(0, 3) == "h2:") {
+            html += '<h2>' + line.substring(3) + '</h2>'
+        } else {
+            html += formatStr(line)
+        };
+    };
+
+    html += '</div>';
+    return html;
+};
+
+const markdownInput = document.getElementById('markdown-input');
+const html_toc = document.getElementById('html-toc');
+
+/**
+    * Main function to trigger conversion on input.
+    */
+function convertMarkdown() {
+    const markdownText = markdownInput.value;
+    try {
+        var html_ret = markdown_2_toc(markdownText);
+        html_toc.innerHTML = html_ret;
+    } catch (error) {
+        html_toc.innerHTML = `<p>Error in Native Conversion:</p><pre>${error.message}</pre>`;
+        console.error("Native Markdown conversion failed:", error);
+    };
+}
+
+// Run the conversion once on load to populate the initial example text
+window.onload = convertMarkdown;
+document.getElementById("html-toc").style.display = 'block';
+markdownInput.style.display = 'none'
+
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body></html>
+
