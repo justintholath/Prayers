@@ -1,9 +1,7 @@
 
-var displayLang = "P";
-
 var display_chapter = 1;
 
-function formatStr(inString) {
+function formatCom(inString) {
     var outString = ''
     if (inString.substring(0, 2) == "- ") {
         outString = '&bull;' + inString.substring(1)
@@ -50,21 +48,6 @@ function formatStr(inString) {
             outString += "</mark>"
         }
     }
-    if (outString.substring(0,2) == "E:") {
-        if (displayLang == 'M') {
-            outString = ""
-        } else {
-            outString = outString.substring(2)
-        }
-    } else if (outString.substring(0,2) == "M:") {
-        if (displayLang == 'E') {
-            outString = ""
-        } else if (displayLang == 'P') {
-            outString = '<span style="color: #800000;">' + outString.substring(2) + '</span>'
-        } else {
-            outString = outString.substring(2)
-        };
-    };
     return outString
 };
 
@@ -83,7 +66,7 @@ function markdown_2_toc(markdown) {
     toc += "Go back to Home Page";
     toc += "</span></div>";
 
-    toc += '<h1>' + document.title + '</h1>';
+    toc += '<h1>' + document.title + " " + season + '</h1>';
     toc += '<h2>Table of Contents</h2>'
 
     let h1_count = 0;
@@ -114,6 +97,7 @@ function markdown_2_page(markdown) {
     const lines = (markdown + "\n").split('\n');
     let html = '';
     let page_build = '';
+    let tmpStr = '';
 
     let h1_count = 0;
 
@@ -137,24 +121,16 @@ function markdown_2_page(markdown) {
             page_build += '<h1 id="' + 'S' + h1_count + '">' + hdr_name + '</h1>';
             continue;
         };
-        if (line.includes(" ||")) {
-            if (table_found === 0) {
-                page_build += '<table style="border: none; border-collapse: collapse;">'
-                table_found = 1
-            }
-            else {
-                table_found = 2
-            };
-            col_lines = line.split(" ||");
-            page_build += '<tr>'
-            for (const each_col of col_lines){
-                page_build += '<td style="border: none">' + each_col + '</td>'
-            };
-            page_build += '</tr>'
-            continue;
-        };
         switch (hdr_chk) {
         case "===":
+            break;
+        case "ts:":
+            page_build += '<table style="border: none; border-collapse: collapse;">';
+            table_found = 1;
+            break;
+        case "te:":
+            page_build += '</table>';
+            table_found = 0;
             break;
         case "h2:":
             page_build += '<h2>' + line.substring(3) + '</h2>';
@@ -181,11 +157,23 @@ function markdown_2_page(markdown) {
             if (line.trim() == '') {
                 page_build += '<div style="height: 5px;"></div>';
             }
-            else if (table_found === 0) {
-                page_build += formatStr(line) + '<br>'
-            }
             else {
-                page_build += formatStr(line + '<br>')
+                if (line.includes(" ||")) {
+                    col_lines = line.split(" ||");
+                    page_build += '<tr>';
+                    for (const each_col of col_lines){
+                        page_build += '<td style="border: none">' + formatCom(each_col) + '</td>'
+                    };
+                    page_build += '</tr>'
+                    continue;
+                }
+                else {
+                    tmpStr = formatStr(line);
+                    if (tmpStr != "") {
+                    tmpStr = tmpStr + '<br>';
+                    };
+                    page_build += tmpStr;
+                };
             };
         };
     };
@@ -210,18 +198,7 @@ const html_page = document.getElementById('html-page');
  * Main function to trigger conversion on input.
  */
 function convertMarkdown() {
-    // Get the query string from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-
-    // Retrieve the specific variable (e.g., 'mode')
-    const myMode = urlParams.get('mode');
-
-    displayLang = 'P';
-    if (myMode === 'E') {
-        displayLang = 'E';
-    } else if (myMode === 'M') {
-        displayLang = 'M';
-    };
+    setLang();
 
     const markdownText = markdownInput.value;
     try {

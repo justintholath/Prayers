@@ -8,9 +8,20 @@
 <!-- ===================================================================================================================================================== -->
 <textarea id="markdown-input">
 
-Beginning Prayer                             ||A_Beginning.html
+ts:
+Beginning Prayer                             |-|01_Beginning.html    |-|E  ||M  ||P
+Ninth hour (Saturday)                        |-|02_Ninth_hr.html     |-|E  ||M  ||P
+te:
+
 h2:Sleeba
-Ninth hour                                   ||B_Sleeba_9_hr.html
+ts:
+Evening                                      |-|03_Evening.html      |-|SE ||SM ||SP
+te:
+
+h2:Kymtha
+ts:
+Evening                                      |-|03_Evening.html      |-|KE ||KM || KP
+te:
 
 </textarea>
 <!-- ====================================================================================================== -->
@@ -21,18 +32,53 @@ Ninth hour                                   ||B_Sleeba_9_hr.html
 <script>
 
 function formatStr(inString) {
-    const cols = (inString).split('||');
-    var outString = cols[0].trim()
-    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=E';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
-    outString += ' English </span>';
+    const cols = (inString).split('|-|');
+    const pryrName = cols[0].trim();
+    const htmlName = cols[1].trim();
+    const vlist = cols[2].split('||')
 
-    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=M';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
-    outString += ' Malayalam </span>';
+    var outString = '<tr><td style="border: none; width: 25%;">' + pryrName + '</td>';
+    for (let version of vlist) {
+        var tmpStr = version.trim();
+        var versionName = ""
+        outString += '<td style="border: none; width: 25%;"><span onclick="window.location.href=' + "'Sub/" + htmlName;
+        outString += "?mode=" + tmpStr + "';\""
+        outString += ' style="cursor: pointer; color: blue; text-decoration: none;">';
+        switch (tmpStr) {
+        case "E":
+            versionName = "English"
+            break;
+        case "M":
+            versionName = "Manglish"
+            break;
+        case "P":
+            versionName = "Parallel"
+            break;
+        case "SE":
+            versionName = "English"
+            break;
+        case "SM":
+            versionName = "Manglish"
+            break;
+        case "SP":
+            versionName = "Parallel"
+            break;
+        case "KE":
+            versionName = "English"
+            break;
+        case "KM":
+            versionName = "Manglish"
+            break;
+        case "KP":
+            versionName = "Parallel"
+            break;
+        default:
+            alert("_" + tmpStr + "_unexpected version" + inString)
+        };
+        outString += ' ' + versionName + ' </span>' + '</td>';
+    };
 
-    outString += ' -<span onclick="window.location.href=' + "'Sub/" + cols[1].trim() + "?mode=P';\"" + ' style="cursor: pointer; color: blue; text-decoration: none;">';
-    outString += ' Parallel </span><br>';
-
-    return outString;
+    return outString + '</tr>';
 };
 
 /**
@@ -48,10 +94,21 @@ function markdown_2_toc(markdown) {
         const line = lines[line_i].trim(); // The current line
         if (line == '') {
             html += '<div style="height: 5px;"></div>';
-        } else if (line.substring(0, 3) == "h2:") {
-            html += '<h2>' + line.substring(3) + '</h2>'
         } else {
-            html += formatStr(line)
+            let hdr_name = line.substring(0, 3);
+            switch (hdr_name) {
+            case "h2:":
+                html += '<h2>' + line.substring(3) + '</h2>'
+                break;
+            case "ts:":
+                html += '<table style="border: none; border-collapse: collapse;">'
+                break;
+            case "te:":
+                html += '</table>'
+                break;
+            default:
+                html += formatStr(line)
+            };
         };
     };
 

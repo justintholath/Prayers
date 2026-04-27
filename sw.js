@@ -3,7 +3,8 @@ const ASSETS = [
     './',
     './index.html',
     './styles.css',
-    './app-logic.js',
+    './app-logic-common.js',
+    './app-logic-EM.js',
     './manifest.json'
 ];
 
