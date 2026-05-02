@@ -4,22 +4,40 @@ var season = "";
 
 function formatStr(inString) {
     var outString = formatCom(inString)
-    if (outString.substring(0,2) == "E:") {
-        if (displayLang == 'M') {
-            outString = ""
-        } else {
-            outString = outString.substring(2)
-        }
-    } else if (outString.substring(0,2) == "M:") {
-        if (displayLang == 'E') {
-            outString = ""
-        } else if (displayLang == 'P') {
-            outString = '<span style="color: #800000;">' + outString.substring(2) + '</span>'
-        } else {
-            outString = outString.substring(2)
-        };
+    if (outString == "") {
+        return "*";
     };
-    return outString
+    var langInd = outString.slice(0,2);
+    var remLang = outString.slice(2);
+    switch (displayLang) {
+        case 'M':
+            if (langInd == "E:") {
+                return ""
+            } else if (langInd == "M:") {
+                return remLang;
+            } else {
+                return outString;
+            };
+            break;
+        case 'E':
+            if (langInd == "M:") {
+                return ""
+            } else if (langInd == "E:") {
+                return remLang;
+            } else {
+                return outString;
+            };
+            break;
+        default:
+            if (langInd == "E:") {
+                return remLang;
+            } else if (langInd == "M:") {
+                return '<span style="color: #800000;">' + remLang + '</span>';
+            } else {
+                return outString;
+            };
+    };
+    return outString + "????"
 };
 
 

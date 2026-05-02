@@ -3,7 +3,7 @@ var display_chapter = 1;
 
 function formatCom(inString) {
     var outString = ''
-    if (inString.substring(0, 2) == "- ") {
+    if (inString.slice(0, 2) == "- ") {
         outString = '&bull;' + inString.substring(1)
     }
     else {
@@ -23,6 +23,10 @@ function formatCom(inString) {
     if (outString.includes("~r~")) {
         outString = outString.replace("~r~",'<span style="float: right;">')
         outString += "</span>"
+    }
+    if (outString.includes("~c~")) {
+        outString = outString.replace("~c~",'<div style="text-align: center;">')
+        outString += "</div>"
     }
     while (outString.includes("~i~")) {
         outString = outString.replace("~i~","<i>")
@@ -73,20 +77,22 @@ function markdown_2_toc(markdown) {
     let h2_count = 0;
 
     for (let line_i = 0; line_i < (lines.length - 1); line_i++) {
-        const line = lines[line_i]; // The current line
-        const hdr_chk = line.substring(0, 3);
+        const line = lines[line_i].trim(); // The current line
+        const hdr_chk = line.slice(0, 3);
+        const remStr = line.slice(3);
         if (hdr_chk == "h1:") {
             h1_count += 1;
-            hdr_name = line.substring(3);
             if (h1_count != 1) {toc += '<br>'};
-            toc += '<span onclick="GoToChapter(' +  h1_count + ')" style="cursor: pointer; color: blue; text-decoration: none; font-size: 16px;">'
-            toc += hdr_name + '</span><br>';
-            h2_count = 0;
+            chapStr = "S" + h1_count;
+            toc += '<span onclick="GoToChapter(\'' +  chapStr + '\')" style="cursor: pointer; color: blue; text-decoration: none; font-size: 16px;">'
+            toc += remStr + '</span><br>';
             continue;
-        };
-        if (hdr_chk == "h2:") {
+        } else if (hdr_chk == "h2:") {
             h2_count += 1;
-            toc += '&emsp; &emsp; <span style="font-size: 14px;">' + line.substring(3) + '</span><br>';
+            chapStr = "S" + h1_count + "C" + h2_count;
+            toc += '&emsp; &emsp;';
+            toc += '<span onclick="GoToChapter(\'' +  chapStr + '\')" style="cursor: pointer; color: saddlebrown; text-decoration: none; font-size: 14px;">'
+            toc += remStr + '</span><br>';
         };
     };
     toc += '</div>';
@@ -100,85 +106,75 @@ function markdown_2_page(markdown) {
     let tmpStr = '';
 
     let h1_count = 0;
+    let h2_count = 0;
 
     var col_lines = "";
     let table_found = 0;
 
     for (let line_i = 0; line_i < (lines.length - 1); line_i++) {
-        const line = lines[line_i]; // The current line
-        if (table_found > 0) {
-            if (line.includes(" ||")) {
-                table_found = 2
-            } else {
-                page_build += '</table>'
-                table_found = 0
-            };
-        };
-        const hdr_chk = line.substring(0, 3);
-        if (hdr_chk == "h1:") {
-            h1_count += 1;
-            hdr_name = line.substring(3);
-            page_build += '<h1 id="' + 'S' + h1_count + '">' + hdr_name + '</h1>';
-            continue;
-        };
+        const line = lines[line_i].trim(); // The current line
+        const hdr_chk = line.slice(0, 3);
+        const remStr = line.slice(3);
+        page_build += "\n"
         switch (hdr_chk) {
         case "===":
             break;
-        case "ts:":
-            page_build += '<table style="border: none; border-collapse: collapse;">';
-            table_found = 1;
-            break;
-        case "te:":
-            page_build += '</table>';
-            table_found = 0;
+        case "h1:":
+            h1_count += 1;
+            if (h1_count != 1) {
+                page_build += '<br><span onclick="window.scrollTo(0, 0)" style="cursor: pointer; color: blue; text-decoration: none; font-size: 16px; font-weight: bold;">[Back to Top]</span>';
+            }
+            page_build += '<h1 id="' + 'S' + h1_count + '">' + remStr + '</h1>';
             break;
         case "h2:":
-            page_build += '<h2>' + line.substring(3) + '</h2>';
+            h2_count += 1;
+            page_build += '<h2 id="' + 'S' + h1_count + 'C' + h2_count + '">' + remStr + '</h2>';
             break;
         case "h3:":
-            page_build += '<h3>' + formatStr(line.substring(3)) + '</h3>'
+            var retStr = formatStr(remStr);
+            if (retStr != "") {
+                page_build += '<h3>' + retStr + '</h3>'
+            };
             break;
         case "h4:":
-            page_build += '<h4>' + formatStr(line.substring(3)) + '</h4>'
+            var retStr = formatStr(remStr);
+            if (retStr != "") {
+                page_build += '<h4>' + retStr + '</h4>'
+            };
             break;
         case "h5:":
-            page_build += '<h5>' + formatStr(line.substring(3)) + '</h5>'
+            var retStr = formatStr(remStr);
+            if (retStr != "") {
+                page_build += '<h5>' + retStr + '</h5>'
+            };
             break;
         case "hr:":
             page_build += '<hr style="height: 1px; background-color: grey; border: none; margin-top: 0px; margin-bottom: 0px;">'
             break;
         case "ip:":
-            page_build += '<p style="margin-left: 18px;";>' + formatStr(line.substring(3)) + '</p>'
+            var retStr = formatStr(remStr);
+            if (retStr != "") {
+                page_build += '<p style="margin-left: 18px;";>' + retStr + '</p>';
+            };
             break;
         case "iq:":
-            page_build += '<p style="margin-left: 36px;";>' + formatStr(line.substring(3)) + '</p>'
+            var retStr = formatStr(remStr);
+            if (retStr != "") {
+                page_build += '<p style="margin-left: 36px;";>' + retStr + '</p>';
+            };
             break;
         default:
-            if (line.trim() == '') {
-                page_build += '<div style="height: 5px;"></div>';
-            }
-            else {
-                if (line.includes(" ||")) {
-                    col_lines = line.split(" ||");
-                    page_build += '<tr>';
-                    for (const each_col of col_lines){
-                        page_build += '<td style="border: none">' + formatCom(each_col) + '</td>'
-                    };
-                    page_build += '</tr>'
-                    continue;
-                }
-                else {
-                    tmpStr = formatStr(line);
-                    if (tmpStr != "") {
-                    tmpStr = tmpStr + '<br>';
-                    };
-                    page_build += tmpStr;
-                };
+            var retStr = formatStr(line);
+            // page_build += retStr;
+            if (retStr == "*") {
+                page_build += '<div style="height: 10px;"></div>';
+            } else if (retStr != "") {
+                page_build += formatStr(line) + '<br>';
             };
         };
     };
 
-    page_build += '<span onclick="window.scrollTo(0, 0)" style="cursor: pointer; color: blue; text-decoration: none; font-size: 18px; font-weight: bold;">[Back to Top]</span>';
+    page_build += '<br><span onclick="window.scrollTo(0, 0)" style="cursor: pointer; color: blue; text-decoration: none; font-size: 18px; font-weight: bold;">[Back to Top]</span>';
 
     page_build  += '<br><br>';
     page_build += '<span onclick="window.location.href=\'../index.html\';" style="cursor: pointer; color: blue; text-decoration: none; font-size: 18px; font-weight: bold;">';
@@ -186,7 +182,6 @@ function markdown_2_page(markdown) {
     page_build += "</span><br><br><br><br>";
 
     html += '<div class="container">' + page_build + '</div>';
-
     return html;
 };
 
@@ -217,10 +212,9 @@ function convertMarkdown() {
     };
 }
 
-function GoToChapter(inVal) {
-    display_chapter = inVal;
+function GoToChapter(chapStr) {
     convertMarkdown()
-    const verseElement = document.getElementById("S" + inVal);
+    const verseElement = document.getElementById(chapStr);
 
     if (verseElement) {
         const elementPosition = verseElement.getBoundingClientRect().top;

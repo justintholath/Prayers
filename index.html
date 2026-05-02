@@ -9,18 +9,36 @@
 <textarea id="markdown-input">
 
 ts:
-Beginning Prayer                             |-|01_Beginning.html    |-|E  ||M  ||P
-Ninth hour (Saturday)                        |-|02_Ninth_hr.html     |-|E  ||M  ||P
+Beginning Prayer                             |-|01_Beginning.html    |-|AE ||AM ||AP
+Ninth hour (Saturday)                        |-|02_Ninth_hr.html     |-|AE ||AM ||AP
 te:
 
 h2:Sleeba
 ts:
 Evening                                      |-|03_Evening.html      |-|SE ||SM ||SP
+Soothara                                     |-|04_Soothara.html     |-|SE ||SM ||SP
+Night                                        |-|05_Night.html        |-|SE ||SM ||SP
+Morning                                      |-|06_Morning.html      |-|SE ||SM ||SP
+Third hour                                   |-|07_Third_hr.html     |-|SE ||SM ||SP
+Sixth hour                                   |-|08_Sixth_hr.html     |-|SE ||SM ||SP
 te:
 
 h2:Kymtha
 ts:
-Evening                                      |-|03_Evening.html      |-|KE ||KM || KP
+Evening                                      |-|03_Evening.html      |-|KE ||KM ||KP
+Soothara                                     |-|04_Soothara.html     |-|KE ||KM ||KP
+Night                                        |-|05_Night.html        |-|KE ||KM ||KP
+Morning                                      |-|06_Morning.html      |-|KE ||KM ||KP
+Third hour                                   |-|07_Third_hr.html     |-|KE ||KM ||KP
+Sixth hour                                   |-|08_Sixth_hr.html     |-|KE ||KM ||KP
+te:
+
+h2:Qurbana
+ts:
+Qurbana Part 1                               |-|09_Qurbana_1.html        |-|AE ||AM ||AP
+Qurbana Part 2                               |-|10_Qurbana_2.html        |-|AE ||AM ||AP
+Dhoopa Prarthana                             |-|11_Dhoopa_Prarthana.html |-|AE ||AM ||AP
+Qurbana Part 4                               |-|12_Qurbana_4.html        |-|AE ||AM ||AP
 te:
 
 </textarea>
@@ -45,13 +63,13 @@ function formatStr(inString) {
         outString += "?mode=" + tmpStr + "';\""
         outString += ' style="cursor: pointer; color: blue; text-decoration: none;">';
         switch (tmpStr) {
-        case "E":
+        case "AE":
             versionName = "English"
             break;
-        case "M":
+        case "AM":
             versionName = "Manglish"
             break;
-        case "P":
+        case "AP":
             versionName = "Parallel"
             break;
         case "SE":
