@@ -4,7 +4,7 @@ const ASSETS = [
     './index.html',
     './styles.css',
     './app-logic-common.js',
-    './app-logic-EM.js',
+    './app-logic-SK.js',
     './manifest.json'
 ];
 
