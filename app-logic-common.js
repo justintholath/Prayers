@@ -1,6 +1,4 @@
 
-var display_chapter = 1;
-
 function formatCom(inString) {
     var outString = ''
     if (inString.slice(0, 2) == "- ") {
@@ -115,7 +113,6 @@ function markdown_2_page(markdown) {
         const line = lines[line_i].trim(); // The current line
         const hdr_chk = line.slice(0, 3);
         const remStr = line.slice(3);
-        page_build += "\n"
         switch (hdr_chk) {
         case "===":
             break;
