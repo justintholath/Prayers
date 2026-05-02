@@ -210,7 +210,6 @@ function convertMarkdown() {
 }
 
 function GoToChapter(chapStr) {
-    convertMarkdown()
     const verseElement = document.getElementById(chapStr);
 
     if (verseElement) {
